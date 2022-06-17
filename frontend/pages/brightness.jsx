@@ -1,9 +1,9 @@
-import Power from "../components/Lamp/Power";
+import Brightness from "../components/Lamp/Brightness";
 
 const Index = () => {
     return (
         <>
-            <Power />
+            <Brightness />
         </>
     );
 };

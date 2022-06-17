@@ -1,9 +1,9 @@
-import Power from "../components/Lamp/Power";
+import Sensor from "../components/Lamp/Sensor";
 
 const Index = () => {
     return (
         <>
-            <Power />
+            <Sensor />
         </>
     );
 };
