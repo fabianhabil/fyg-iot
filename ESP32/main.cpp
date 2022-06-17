@@ -76,15 +76,15 @@ void setup() {
                     }
                 }
                 else {
-                    request->send_P(404, "text/plain", "Not Found, Check Documentation");
+                    request->send_P(404, "text/plain", "Not Found");
                 }
             }
             else {
-                request->send_P(404, "text/plain", "Not Found, Check Documentation");
+                request->send_P(404, "text/plain", "Not Found");
             }
         }
         else {
-            request->send_P(404, "text/plain", "Not Found, Check Documentation");
+            request->send_P(404, "text/plain", "Not Found");
         }
         });
     server.on("/sensor", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -118,15 +118,15 @@ void setup() {
                     }
                 }
                 else {
-                    request->send_P(404, "text/plain", "Not Found, Check Documentation");
+                    request->send_P(404, "text/plain", "Not Found");
                 }
             }
             else {
-                request->send_P(404, "text/plain", "Not Found, Check Documentation");
+                request->send_P(404, "text/plain", "Not Found");
             }
         }
         else {
-            request->send_P(404, "text/plain", "Not Found, Check Documentation");
+            request->send_P(404, "text/plain", "Not Found");
         }
         });
     server.on("/brightness", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -144,11 +144,11 @@ void setup() {
                 request->send_P(200, "text/plain", "OK");
             }
             else {
-                request->send_P(404, "text/plain", "Not Found, Check Documentation");
+                request->send_P(404, "text/plain", "Not Found");
             }
         }
         else {
-            request->send_P(404, "text/plain", "Not Found, Check Documentation");
+            request->send_P(404, "text/plain", "Not Found");
         }
         });
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
