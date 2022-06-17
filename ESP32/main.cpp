@@ -3,9 +3,15 @@
 #include <ESPAsyncWebServer.h>
 
 // Global Variable
-const int LED = 14;
+const int LED1 = 14;
+const int LED2 = 13;
+const int LED3 = 12;
 const int BUILT_LED = 2;
 const int LIGHT_SENSOR = 34;
+const int freq = 5000;
+const int ledChannel = 0;
+const int resolution = 8;
+int brightness = 0;
 bool useSensor = false;
 bool lampOn = false;
 const char* ssid = "bianha";
@@ -15,26 +21,23 @@ String header;
 // Web Server using port 80
 AsyncWebServer server(80);
 
-// Current time
-unsigned long currentTime = millis();
-// Previous time
-unsigned long previousTime = 0;
-// Define timeout time in milliseconds (example: 2000ms = 2s)
-const long timeoutTime = 2000;
-
 void setup() {
-    // put your setup code here, to run once:
     Serial.begin(115200);
-    pinMode(LED, OUTPUT);
+    pinMode(LED1, OUTPUT);
+    pinMode(LED2, OUTPUT);
+    pinMode(LED3, OUTPUT);
+    ledcSetup(ledChannel, freq, resolution);
+    ledcAttachPin(LED1, ledChannel);
+    ledcAttachPin(LED2, ledChannel);
+    ledcAttachPin(LED3, ledChannel);
+    ledcAttachPin(BUILT_LED, ledChannel);
     pinMode(BUILT_LED, OUTPUT);
-    digitalWrite(LED, LOW);
-    digitalWrite(BUILT_LED, LOW);
+    ledcWrite(ledChannel, brightness);
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
-    // Print local IP address and start web server
     Serial.println("");
     Serial.println("WiFi connected.");
     Serial.println("IP address: ");
@@ -44,30 +47,31 @@ void setup() {
         });
     server.on("/lamp", HTTP_GET, [](AsyncWebServerRequest* request) {
         int params = request->params();
-        Serial.println(params);
-
         if (params == 0) {
             lampOn ? request->send_P(200, "text/plain", "On") : request->send_P(200, "text/plain", "Off");
         }
         if (params == 1) {
-            AsyncWebParameter* p = request->getParam(i);
-            string parameter = "power";
-            if (parameter.compare(p->name()) == 0) {
-                if (p->value().compare("on") == 0) {
+            AsyncWebParameter* p = request->getParam(0);
+            String parameter = "power";
+            if (parameter.compareTo(p->name()) == 0) {
+                if (p->value().compareTo("on") == 0) {
                     if (lampOn) {
                         request->send_P(400, "text/plain", "Lamp Already On!");
                     }
                     else {
+                        brightness = 255;
+                        useSensor = false;
                         lampOn = true;
                         request->send_P(200, "text/plain", "On");
                     }
                 }
-                else if (p->value().compare("off") == 0) {
+                else if (p->value().compareTo("off") == 0) {
                     if (!lampOn) {
                         request->send_P(400, "text/plain", "Lamp Already Off!");
                     }
                     else {
                         lampOn = false;
+                        brightness = 0;
                         request->send_P(200, "text/plain", "Off");
                     }
                 }
@@ -78,61 +82,85 @@ void setup() {
             else {
                 request->send_P(404, "text/plain", "Not Found, Check Documentation");
             }
-            for (int i = 0;i < params;i++) {
-                AsyncWebParameter* p = request->getParam(i);
-                Serial.print("Param name: ");
-                Serial.println(p->name());
-                Serial.print("Param value: ");
-                Serial.println(p->value());
-                Serial.println("------");
+        }
+        else {
+            request->send_P(404, "text/plain", "Not Found, Check Documentation");
+        }
+        });
+    server.on("/sensor", HTTP_GET, [](AsyncWebServerRequest* request) {
+        int params = request->params();
+        if (params == 0) {
+            useSensor ? request->send_P(200, "text/plain", "On") : request->send_P(200, "text/plain", "Off");
+        }
+        if (params == 1) {
+            AsyncWebParameter* p = request->getParam(0);
+            String parameter = "power";
+            if (parameter.compareTo(p->name()) == 0) {
+                if (p->value().compareTo("on") == 0) {
+                    if (useSensor) {
+                        request->send_P(400, "text/plain", "Sensor Already On!");
+                    }
+                    else {
+                        brightness = 255;
+                        useSensor = true;
+                        lampOn = false;
+                        request->send_P(200, "text/plain", "On");
+                    }
+                }
+                else if (p->value().compareTo("off") == 0) {
+                    if (!useSensor) {
+                        request->send_P(400, "text/plain", "Sensor Already Off!");
+                    }
+                    else {
+                        brightness = 0;
+                        useSensor = false;
+                        request->send_P(200, "text/plain", "Off");
+                    }
+                }
+                else {
+                    request->send_P(404, "text/plain", "Not Found, Check Documentation");
+                }
+            }
+            else {
+                request->send_P(404, "text/plain", "Not Found, Check Documentation");
             }
         }
         else {
             request->send_P(404, "text/plain", "Not Found, Check Documentation");
         }
         });
-    server.on("/lamp/on/", HTTP_GET, [](AsyncWebServerRequest* request) {
-        if (lampOn) {
-            request->send_P(400, "text/plain", "Lamp Already On!");
+    server.on("/brightness", HTTP_GET, [](AsyncWebServerRequest* request) {
+        int params = request->params();
+        if (params == 0) {
+            char _post[40];
+            sprintf(_post, "%d", brightness);
+            request->send_P(200, "text/plain", _post);
+        }
+        if (params == 1) {
+            AsyncWebParameter* p = request->getParam(0);
+            String parameter = "value";
+            if (parameter.compareTo(p->name()) == 0) {
+                brightness = p->value().toInt();
+                request->send_P(200, "text/plain", "OK");
+            }
+            else {
+                request->send_P(404, "text/plain", "Not Found, Check Documentation");
+            }
         }
         else {
-            lampOn = true;
-            request->send_P(200, "text/plain", "On");
+            request->send_P(404, "text/plain", "Not Found, Check Documentation");
         }
         });
-    server.on("/lamp/off/", HTTP_GET, [](AsyncWebServerRequest* request) {
-        if (!lampOn) {
-            request->send_P(400, "text/plain", "Lamp Already Off!");
-        }
-        else {
-            lampOn = false;
-            request->send_P(200, "text/plain", "Off");
-        }
-        });
-    // server.on("/sensor", HTTP_GET, [](AsyncWebServerRequest* request) {
-    //     if (useSensor) request->send_P(200, "text/plain", "On") : request->send_P(200, "text/plain", "Off");
-    //     });
-    // server.on("/sensor/power", HTTP_GET, [](AsyncWebServerRequest* request) {
-    //     useSensor = !useSensor;
-    //     request->send_P(200, "text/plain", "%d", useSensor);
-    //     });
-
+    DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     server.begin();
-
     pinMode(LIGHT_SENSOR, INPUT);
 }
 
 void loop() {
-    // put your main code here, to run repeatedly:
     int sensorValue = analogRead(LIGHT_SENSOR);
     if (useSensor) {
-        digitalWrite(LED, sensorValue < 500 ? HIGH : LOW);
-        digitalWrite(BUILT_LED, sensorValue < 500 ? HIGH : LOW);
+        brightness = sensorValue < 500 ? 255 : 0;
     }
-    if (lampOn) {
-        digitalWrite(LED, HIGH);
-        digitalWrite(BUILT_LED, HIGH);
-    }
-    //  Serial.println(sensorValue);
+    ledcWrite(ledChannel, brightness);
     delay(300);
 }

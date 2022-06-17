@@ -19,7 +19,6 @@ const Tagline = styled.h1`
 
 const Img = styled.img`
     width: 100%;
-    height: 100%;
 `;
 
 const TextButton = styled.p`
