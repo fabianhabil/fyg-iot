@@ -1,5 +1,3 @@
-# README NOT FINISHED
-
 # fyg-iot
 
 Our Project for Human Computer Interaction Course Semester 2 @Bina Nusantara Bandung
@@ -16,7 +14,12 @@ Our Project for Human Computer Interaction Course Semester 2 @Bina Nusantara Ban
    cd frontend
    npm install
    ```
-5. 
+5. Upload main.cpp to your ESP32 (Dont forget to download the header file)
+6. Edit your ESP32 IP Address on .env file in the root of the frontend directory.
+7. ```
+   npm run dev
+   ```
+8. Your program is ready!
 
 
 ## Backstory
@@ -31,6 +34,10 @@ We promise we will back with some cool and good project in the future!
 We can turn off and turn on the lamp on the website (make sure your on the same wifi with the lamp).
 We used photosensor to make the lamp on and off based on the lighting around the lamp.
 
+## How it works?
+
+Basically, the ESP32 is gonna be the server and we send a request to the server. To see how it works, please kindly read main.cpp because too long to explain :D
+
 ## Member
 
 -   2501976503 - Fabian Habil Ramdhan
@@ -43,3 +50,5 @@ We used photosensor to make the lamp on and off based on the lighting around the
 -   Photosensor
 -   Jumper Wires
 -   Breadboard
+-   Next JS
+-   Bootstrap with Styled Components
