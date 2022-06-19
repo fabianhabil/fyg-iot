@@ -2,6 +2,12 @@
 
 Our Project for Human Computer Interaction Course Semester 2 @Bina Nusantara Bandung
 
+## Video Demo
+```
+https://www.youtube.com/watch?v=kGtCep5hEHA&ab_channel=FabianHabilRamdhan
+```
+
+
 ## Installation Guide
 
 1. You need an ESP32, NodeJS and Git installed on your computer.
