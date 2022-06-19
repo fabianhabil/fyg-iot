@@ -3,7 +3,7 @@
 Our Project for Human Computer Interaction Course Semester 2 @Bina Nusantara Bandung
 
 ## Video Demo
-[Link Youtube]: https://www.youtube.com/watch?v=kGtCep5hEHA&ab_channel=FabianHabilRamdhan
+[Link Youtube](https://www.youtube.com/watch?v=kGtCep5hEHA&ab_channel=FabianHabilRamdhan)
 
 
 ## Installation Guide
